@@ -26,10 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-            // Fetch the Site Settings object
-            //$groups = [];
+            //Fetch the Site Settings object
+            $groups = [];
             $groups = CategoryGroup::with('categories')->get();
             View::share('groups', $groups);
-        
+
     }
 }

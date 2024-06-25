@@ -41,6 +41,12 @@ class GuestController extends Controller
         return view('posts.mostrarCarro', compact('products'));
     }
 
+    public function agendarHora(): View
+    {
+        $products = Cart::content();
+        return view('posts.agendar', compact('products'));
+    }
+
     public function search(ProductSearchRequest $request)
     {
         $search_query = $request->validated()['search'];

@@ -20,5 +20,4 @@ class ShoppingCart extends Component
         $this->emit('cart_updated');
     }
 
-
 }

@@ -24,6 +24,7 @@ Route::get('/', [GuestController::class, 'index'])->name("landing");
 Route::get('product/{product}', [GuestController::class, 'show'])->name('guest.product.show');
 Route::get('/Cart', [GuestController::class, 'show_cart'])->name('mostrar_carro');
 Route::get('/Category/{group}', [GuestController::class, 'show_category'])->name('mostrar_categoria');
+Route::get('/Agendar', [GuestController::class, 'agendarHora'])->name("agendar");
 // Links footer
 Route::view('/mediosDePago', 'posts\mediosDePago')->name('mediosDePago');
 Route::view('/comoComprar', 'posts\comoComprar')->name('comoComprar');
