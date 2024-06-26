@@ -26,9 +26,9 @@ Route::get('/Cart', [GuestController::class, 'show_cart'])->name('mostrar_carro'
 Route::get('/Category/{group}', [GuestController::class, 'show_category'])->name('mostrar_categoria');
 Route::get('/Agendar', [GuestController::class, 'agendarHora'])->name("agendar");
 // Links footer
-Route::view('/mediosDePago', 'posts\mediosDePago')->name('mediosDePago');
-Route::view('/comoComprar', 'posts\comoComprar')->name('comoComprar');
-Route::view('/envios', 'posts\envios')->name('envios');
+Route::view('/mediosDePago', 'posts.mediosDePago')->name('mediosDePago');
+Route::view('/comoComprar', 'posts.comoComprar')->name('comoComprar');
+Route::view('/envios', 'posts.envios')->name('envios');
 
 Route::resource('client', CreateClientController::class)->only(['create', 'store']);
 
