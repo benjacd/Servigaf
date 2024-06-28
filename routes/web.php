@@ -47,12 +47,16 @@ Route::get('boleta/{buy_order}', function (string $buy_order){
     return (new \App\Services\InvoiceService())->create($transaction->client, $transaction);
 })->name('boleta');
 
-Route::middleware('auth')->prefix('/admin')->group(function () {
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+Route::middleware(['auth', 'role:admin'])->prefix('/admin')->group(function () {
+    Route::view('/dashboard', 'admin.dashboard')->name('admin.dashboard');
     Route::resource('products', ProductController::class)->except('show');
     Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
     Route::resource('groups', CategoryGroupController::class)->except(['create', 'show']);
     Route::resource('categories', CategoryController::class)->except(['index', 'create', 'show']);
+});
+
+Route::middleware('auth', 'role:cliente')->prefix('/customer')->group(function () {
+    Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
 });
 
 Route::get('/posts', function () {
