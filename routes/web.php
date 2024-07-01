@@ -4,9 +4,10 @@ use App\Http\Controllers\Admin\CategoryGroupController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CreateClientController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\TransbankController;
+use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,7 +31,6 @@ Route::view('/mediosDePago', 'posts.mediosDePago')->name('mediosDePago');
 Route::view('/comoComprar', 'posts.comoComprar')->name('comoComprar');
 Route::view('/envios', 'posts.envios')->name('envios');
 
-Route::resource('client', CreateClientController::class)->only(['create', 'store']);
 
 Route::prefix('transbank')->as('transbank.')->group(function () {
     Route::get('payment', [TransbankController::class, 'createdTransaction'])->name('create');
@@ -56,8 +56,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('/admin')->group(function () {
 });
 
 Route::middleware('auth', 'role:cliente')->prefix('/customer')->group(function () {
-    Route::view('/dashboard', 'user.dashboard')->name('user.dashboard');
+    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+    Route::get('/client/edit', [ClientController::class, 'edit'])->name('client.edit');
+    Route::put('/client/update', [ClientController::class, 'update'])->name('client.update');
+    Route::post('/client/store', [ClientController::class, 'store'])->name('client.store');
 });
+
 
 Route::get('/posts', function () {
     return view('posts.index');
