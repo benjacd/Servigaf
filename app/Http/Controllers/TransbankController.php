@@ -24,14 +24,27 @@ class TransbankController extends Controller
 
     public function createdTransaction()
     {
-        if(Session::missing('transaction'))
-        {
-            return redirect()->route('mostrar_carro')->withErrors(['Transactionless'=>'Ha ocurrido un error en la transacción']);
+        \Log::info('Entrando a createdTransaction');
+
+        if (Session::missing('transaction')) {
+            \Log::warning('Falta transacción en la sesión, redirigiendo a mostrar_carro');
+            return redirect()->route('mostrar_carro')->withErrors(['Transactionless' => 'Ha ocurrido un error en la transacción']);
         }
         $transaction = Session::get('transaction');
+        \Log::info('Transacción encontrada en la sesión', ['transaction' => $transaction]);
 
+        if (auth()->guest()) {
+            \Log::warning('Usuario no autenticado, redirigiendo a login');
+            return redirect()->route('login')->withErrors(['message' => 'Debes iniciar sesión para continuar con la compra.']);
+        }
+
+        if (!auth()->user()->client) {
+            \Log::warning('Usuario no tiene cliente, redirigiendo a client.create');
+            return redirect()->route('client.create')->withErrors(['message' => 'Debes completar tus datos de cliente para continuar con la compra.']);
+        }
+
+        \Log::info('Creando transacción en WebpayPlus');
         $resp = WebpayPlus::transaction()
-            ->build()
             ->create(
                 $transaction->buy_order,
                 Session::getId(),
@@ -39,43 +52,36 @@ class TransbankController extends Controller
                 route('transbank.returnUrl')
             );
 
-
         return view('webpayplus/transaction_created', compact('resp'));
     }
 
-    public function commitTransaction(CommitTransactionRequest $request)
+    public function commitTransaction(Request $request)
     {
-        $req = $request->validated();
+        $token = $request->input('token_ws');
 
-        if (!$token = $req['token_ws'] ?? null) {
-            // Hubo un problema, no se pudo llevar a cabo la transaccion.
-            $transaction = Transaction::where('buy_order', $req['TBK_ORDEN_COMPRA'])->first();
-
-            Client::where('id', $transaction->id)->first()->delete();
-
-            $transaction->delete();
-
+        if (!$token) {
+            \Log::error('Falta token en la respuesta');
             return redirect()->route('mostrar_carro')->withErrors([
-                'Transaccion anormal' => 'Ocurrió un error inesperado al momento de procesar la transacción.'
+                'Transacción anormal' => 'Ocurrió un error inesperado al momento de procesar la transacción.'
             ]);
         }
 
-        // La transaccion fue llevada exitosamente
+        \Log::info('Comitiendo transacción en WebpayPlus');
         $resp = WebpayPlus::transaction()->commit($token);
 
         if (!$resp->isApproved()) {
-            // La transaccion no fue aprobada.
+            \Log::warning('Transacción no aprobada', ['resp' => $resp]);
             return redirect()->route('mostrar_carro')->withErrors([
-                'Aprobacion' => 'La compra no fue aprobada por tu banco.'
+                'Aprobación' => 'La compra no fue aprobada por tu banco.'
             ]);
         }
 
+        \Log::info('Transacción aprobada', ['resp' => $resp]);
         Transaction::where('buy_order', $resp->getBuyOrder())->update(['was_payed' => true]);
 
-        foreach(Cart::content() as $product){
-            $aux = Product::where('id',$product->id)->first();
-            $aux->stock = ($aux->stock - $product->qty );
-            $aux->save();
+        foreach (Cart::content() as $product) {
+            $productModel = Product::find($product->id);
+            $productModel->decrement('stock', $product->qty);
         }
 
         Cart::destroy();

@@ -8,35 +8,28 @@ use App\Http\Controllers\GuestController;
 use App\Http\Controllers\TransbankController;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CreateClientController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', [GuestController::class, 'index'])->name("landing");
 Route::get('product/{product}', [GuestController::class, 'show'])->name('guest.product.show');
 Route::get('/Cart', [GuestController::class, 'show_cart'])->name('mostrar_carro');
 Route::get('/Category/{group}', [GuestController::class, 'show_category'])->name('mostrar_categoria');
 Route::get('/Agendar', [GuestController::class, 'agendarHora'])->name("agendar");
-// Links footer
+
 Route::view('/mediosDePago', 'posts.mediosDePago')->name('mediosDePago');
 Route::view('/comoComprar', 'posts.comoComprar')->name('comoComprar');
 Route::view('/envios', 'posts.envios')->name('envios');
 
+Route::resource('client', ClientController::class)->only(['create', 'store', 'edit', 'update']);
 
 Route::prefix('transbank')->as('transbank.')->group(function () {
-    Route::get('payment', [TransbankController::class, 'createdTransaction'])->name('create');
+    Route::get('payment', [CreateClientController::class, 'createTransactionAndRedirect'])->name('create');
+    Route::get('createTransaction', [TransbankController::class, 'createdTransaction'])->name('createTransaction');
     Route::any('returnUrl', [TransbankController::class, 'commitTransaction'])->name('returnUrl');
     Route::view('thanks', 'webpayplus.transaction_committed')->name('finished');
 });
+
 
 Route::get('boleta/{buy_order}', function (string $buy_order){
     $transaction = \App\Models\Transaction::where('buy_order', $buy_order)
@@ -62,18 +55,14 @@ Route::middleware('auth', 'role:cliente')->prefix('/customer')->group(function (
     Route::post('/client/store', [ClientController::class, 'store'])->name('client.store');
 });
 
-
 Route::get('/posts', function () {
     return view('posts.index');
 });
 
 require __DIR__.'/auth.php';
 
-
 Route::get('/welcome', function (){
     return view('welcome');
 });
 
 Route::get('/search', [GuestController::class, 'search'])->name("search");
-
-
