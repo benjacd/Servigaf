@@ -16,6 +16,7 @@ class Transaction extends Model
         'client_id',
         'final_price',
         'buy_order',
+        'was_received',
     ];
 
     public function client(): BelongsTo {

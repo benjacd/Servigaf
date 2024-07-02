@@ -46,11 +46,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('/admin')->group(function () {
     Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
     Route::resource('groups', CategoryGroupController::class)->except(['create', 'show']);
     Route::resource('categories', CategoryController::class)->except(['index', 'create', 'show']);
+    Route::patch('transactions/{transaction}/mark-as-sent', [TransactionController::class, 'markAsSent'])->name('transactions.markAsSent');
+    Route::patch('transactions/{transaction}/mark-as-not-sent', [TransactionController::class, 'markAsNotSent'])->name('transactions.markAsNotSent');
 });
+
 
 Route::middleware('auth', 'role:cliente')->prefix('/customer')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
     Route::get('/client/edit', [ClientController::class, 'edit'])->name('client.edit');
+    Route::resource('transaction', TransactionController::class)->only(['index', 'show']);
     Route::put('/client/update', [ClientController::class, 'update'])->name('client.update');
     Route::post('/client/store', [ClientController::class, 'store'])->name('client.store');
 });

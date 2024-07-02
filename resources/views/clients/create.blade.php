@@ -3,6 +3,11 @@
         <div class="flex-grow sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
+                    @if (session('message'))
+                    <div class="alert alert-warning">
+                        {{ session('message') }}
+                    </div>
+                    @endif
                     <p class="text-lg mb-4">Para continuar, ingresa tus datos:</p>
 
                     @if ($errors->any())

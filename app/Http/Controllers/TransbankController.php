@@ -55,10 +55,10 @@ class TransbankController extends Controller
         return view('webpayplus/transaction_created', compact('resp'));
     }
 
-    public function commitTransaction(Request $request)
+    public function commitTransaction(CommitTransactionRequest $request)
     {
         $token = $request->input('token_ws');
-
+        \Log::error('se entro a commit transaction');
         if (!$token) {
             \Log::error('Falta token en la respuesta');
             return redirect()->route('mostrar_carro')->withErrors([

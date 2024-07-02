@@ -15,8 +15,8 @@
                     <x-nav-link :href="route('customer.dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                        {{ __('Inicio') }}
+                    <x-nav-link :href="route('transaction.index')" :active="request()->routeIs('transaction.*')">
+                        {{ __('Mis Transacciones') }}
                     </x-nav-link>
                     <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                         {{ __('Horas Agendadas') }}
@@ -78,8 +78,8 @@
             <x-responsive-nav-link :href="route('customer.dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                {{ __('Categorías de Productos') }}
+            <x-responsive-nav-link :href="route('transaction.index')" :active="request()->routeIs('transaction.*')">
+                {{ __('Mis Transacciones') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                 {{ __('Productos') }}
