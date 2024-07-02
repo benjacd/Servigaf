@@ -5,11 +5,17 @@
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
             </a>
         </x-slot>
+
+        <div class="mb-4 text-sm text-gray-600">
+            Ingresa tus datos para continuar.
+        </div>
+
         @if (session('message'))
             <div class="alert alert-danger">
                 {{ session('message') }}
             </div>
         @endif
+
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
@@ -38,6 +44,7 @@
                                 type="password"
                                 name="password"
                                 required autocomplete="new-password" />
+                <p class="mt-2 text-sm text-gray-600">La contraseña debe tener al menos 8 caracteres.</p>
             </div>
 
             <!-- Confirm Password -->
