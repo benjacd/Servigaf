@@ -10,7 +10,6 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
@@ -23,6 +22,9 @@
                     </x-nav-link>
                     <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                         {{ __('Transacciones') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('repairs.index')" :active="request()->routeIs('repairs.*')">
+                        {{ __('Reservas') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -76,13 +78,16 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                {{ __('Categorías de Productos') }}
+                {{ __('Productos') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
-                {{ __('Productos') }}
+                {{ __('Categorías de Productos') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                 {{ __('Transacciones') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('repairs.index')" :active="request()->routeIs('repairs.*')">
+                {{ __('Reservas') }}
             </x-responsive-nav-link>
         </div>
 

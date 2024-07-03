@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryGroupController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\AdminRepairController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\TransbankController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CreateClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RepairController;
 
 Route::get('/', [GuestController::class, 'index'])->name("landing");
 Route::get('product/{product}', [GuestController::class, 'show'])->name('guest.product.show');
@@ -20,6 +22,12 @@ Route::get('/Agendar', [GuestController::class, 'agendarHora'])->name("agendar")
 Route::view('/mediosDePago', 'posts.mediosDePago')->name('mediosDePago');
 Route::view('/comoComprar', 'posts.comoComprar')->name('comoComprar');
 Route::view('/envios', 'posts.envios')->name('envios');
+
+Route::post('/repair', [RepairController::class, 'store'])->name('repair.store');
+Route::get('/confirmation', function () {return view('user.repair.confirmation');})->name('confirmation');
+Route::get('/repair/edit', function () {
+    // Lógica para editar la reparación
+})->name('repair.edit');
 
 Route::resource('client', ClientController::class)->only(['create', 'store', 'edit', 'update']);
 
@@ -46,18 +54,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('/admin')->group(function () {
     Route::resource('transactions', TransactionController::class)->only(['index', 'show']);
     Route::resource('groups', CategoryGroupController::class)->except(['create', 'show']);
     Route::resource('categories', CategoryController::class)->except(['index', 'create', 'show']);
+    Route::resource('repairs', AdminRepairController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::patch('transactions/{transaction}/mark-as-sent', [TransactionController::class, 'markAsSent'])->name('transactions.markAsSent');
     Route::patch('transactions/{transaction}/mark-as-not-sent', [TransactionController::class, 'markAsNotSent'])->name('transactions.markAsNotSent');
 });
 
 
-Route::middleware('auth', 'role:cliente')->prefix('/customer')->group(function () {
+Route::middleware(['auth', 'role:cliente'])->prefix('/customer')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
     Route::get('/client/edit', [ClientController::class, 'edit'])->name('client.edit');
     Route::resource('transaction', TransactionController::class)->only(['index', 'show']);
+    Route::resource('repair', RepairController::class)->except(['create']); // Incluir todos los métodos excepto 'create'
     Route::put('/client/update', [ClientController::class, 'update'])->name('client.update');
     Route::post('/client/store', [ClientController::class, 'store'])->name('client.store');
+    Route::delete('/repair/{repair}/cancel', [RepairController::class, 'cancel'])->name('repair.cancel');
+
 });
+
 
 Route::get('/posts', function () {
     return view('posts.index');

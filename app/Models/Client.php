@@ -18,6 +18,11 @@ class Client extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function repairs()
+    {
+        return $this->hasMany(Repair::class, 'id_cliente');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
