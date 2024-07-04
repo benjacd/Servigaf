@@ -58,7 +58,9 @@ class GuestController extends Controller
                 $client = $user->client;
 
                 // Obtener las horas reservadas y aprobadas
-                $reservedDates = Repair::where('repair_accepted', true)->pluck('repair_date')->toArray();
+                $reservedDates = Repair::where('repair_accepted', true)
+                                      ->pluck('repair_date')
+                                      ->toArray();
 
                 return view('posts.agendar', compact('client', 'reservedDates'));
             }
@@ -67,6 +69,7 @@ class GuestController extends Controller
             return redirect()->route('login')->with('message', 'Por favor, inicia sesión para agendar una hora.');
         }
     }
+
 
     public function search(ProductSearchRequest $request)
     {

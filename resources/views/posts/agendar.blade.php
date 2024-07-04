@@ -58,9 +58,12 @@
 
                         <div class="mt-3">
                             <x-label for="repair_date" :value="__('Fecha y Hora de Reparación')"/>
-                            <x-input name="repair_date" id="repair_date" class="block w-full"
-                                     type="text" :value="old('repair_date')" required
-                                     placeholder="Selecciona la fecha y hora"/>
+                            <input name="repair_date" id="repair_date" class="block w-full"
+                                   type="text" :value="old('repair_date')" required
+                                   placeholder="Selecciona la fecha y hora"/>
+                            @error('repair_date')
+                                <p class="text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
@@ -72,15 +75,13 @@
         </div>
     </div>
 </x-guest-layout>
-
-<!-- Incluir Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
 <!-- Incluir Flatpickr JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
     // Convertir las fechas reservadas a un formato de fecha adecuado para Flatpickr
-    var reservedDates = @json($reservedDates).map(date => new Date(date));
+    var reservedDates = @json($reservedDates).map(date => new Date(date.replace(/-/g, '/')));
+    console.log(reservedDates);
 
     flatpickr("#repair_date", {
         enableTime: true,
@@ -92,14 +93,16 @@
         maxTime: "18:00",
         disable: [
             function(date) {
-                // disable weekends
-                if (date.getDay() === 0 || date.getDay() === 6) {
-                    return true;
+                const dateString = date.toISOString().split('T')[0];
+                const reservedTimes = reservedDates.filter(d => d.toISOString().split('T')[0] === dateString);
+                if (reservedTimes.length > 0) {
+                    const reservedHours = reservedTimes.map(d => d.getHours());
+                    return reservedHours.includes(date.getHours());
                 }
-
-                // disable reserved dates
-                return reservedDates.some(reservedDate => reservedDate.getTime() === date.getTime());
+                return false;
             }
-        ]
+        ],
     });
 </script>
+
+
